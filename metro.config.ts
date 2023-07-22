@@ -10,4 +10,3 @@ const config = getDefaultConfig(__dirname, {
 });
 config.resolver.sourceExts.push("mjs"); // <-- New Addition
 module.exports = config;
-
