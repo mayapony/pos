@@ -1,10 +1,9 @@
 import AntDesign from "@expo/vector-icons/AntDesign";
-import { loadAsync, useFonts } from "expo-font";
+import { loadAsync } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
 import { useColorScheme } from "react-native";
-import { TamaguiProvider, Theme } from "tamagui";
-import config from "../tamagui.config";
+import { PaperProvider } from "react-native-paper";
 
 function cacheFonts(fonts: string[] | Record<string, string>[]) {
   return fonts.map((font) => loadAsync(font));
@@ -34,27 +33,16 @@ export default function RootLayout() {
     loadResourcesAndDataAsync();
   }, []);
 
-  const [loaded] = useFonts({
-    Inter: require("@tamagui/font-inter/otf/Inter-Medium.otf"),
-    InterBold: require("@tamagui/font-inter/otf/Inter-Bold.otf"),
-  });
-
-  if (!loaded || !appIsReady) {
-    return null;
-  }
-
   return (
-    <TamaguiProvider config={config}>
-      <Theme name={colorScheme === "dark" ? "dark" : "light"}>
-        <Stack>
-          <Stack.Screen
-            name="(tabs)"
-            options={{
-              headerShown: false,
-            }}
-          />
-        </Stack>
-      </Theme>
-    </TamaguiProvider>
+    <PaperProvider>
+      <Stack>
+        <Stack.Screen
+          name="(tabs)"
+          options={{
+            headerShown: false,
+          }}
+        />
+      </Stack>
+    </PaperProvider>
   );
 }

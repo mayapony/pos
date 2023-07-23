@@ -1,7 +1,7 @@
 import React from "react";
 import { Text, View } from "react-native";
 
-const record = () => {
+const RecordScreen = () => {
   return (
     <View>
       <Text>record</Text>
@@ -9,4 +9,4 @@ const record = () => {
   );
 };
 
-export default record;
+export default RecordScreen;
