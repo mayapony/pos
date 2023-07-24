@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
+  Button,
+  Dialog,
   Divider,
   FAB,
   List,
@@ -8,26 +10,29 @@ import {
   Modal,
   Portal,
   Searchbar,
-  Surface,
   Text,
   useTheme,
 } from "react-native-paper";
 import { CodeScanner } from "../../components/home/CodeScanner";
+import { PhoneSpecForm } from "../../components/home/PhoneSpecForm";
 import { MockPhones } from "../../mock/phones";
 
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = React.useState(true);
   const theme = useTheme();
   const styles = homeStyles(theme);
 
   const [scannedData, setScannedData] = useState("");
-  const [scanned, setScanned] = useState(false);
+  const [scanned, setScanned] = useState(true);
 
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
-  const handleOpenBarCodeScanner = () => {};
+  const handleScan = () => {
+    setScanned(false);
+    showModal();
+  };
 
   return (
     <View style={styles.container}>
@@ -57,25 +62,30 @@ const HomeScreen = () => {
         })}
       </View>
       <Portal>
-        <Modal
-          visible={visible}
-          onDismiss={hideModal}
-          contentContainerStyle={styles.modalContainer}
-        >
-          {!!scanned ? (
-            <Surface elevation={2} style={styles.modalContent}>
-              <Text>Scan Result: {scannedData}</Text>
-            </Surface>
-          ) : (
+        {!!scanned ? (
+          <Dialog visible={visible} onDismiss={hideModal}>
+            <Dialog.Content>
+              <PhoneSpecForm scannedData={scannedData} />
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={hideModal}>确定</Button>
+            </Dialog.Actions>
+          </Dialog>
+        ) : (
+          <Modal
+            visible={visible}
+            onDismiss={hideModal}
+            contentContainerStyle={styles.modalContainer}
+          >
             <CodeScanner
               scanned={scanned}
               setScanned={setScanned}
               setScannedData={setScannedData}
             />
-          )}
-        </Modal>
+          </Modal>
+        )}
       </Portal>
-      <FAB icon="plus" style={styles.addFAB} onPress={showModal} />
+      <FAB icon="plus" style={styles.addFAB} onPress={handleScan} />
     </View>
   );
 };
@@ -110,14 +120,6 @@ const homeStyles = function (theme: MD3Theme) {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
-    },
-    modalContent: {
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      borderRadius: theme.roundness,
     },
   });
 };

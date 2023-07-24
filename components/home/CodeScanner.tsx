@@ -60,7 +60,9 @@ export function CodeScanner({
 
 const styles = StyleSheet.create({
   container: {
-    width: Dimensions.get("window").width * 0.6,
+    width: Dimensions.get("window").width * 0.8,
     aspectRatio: 1,
+    borderRadius: 15,
+    overflow: "hidden",
   },
 });
