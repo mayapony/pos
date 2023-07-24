@@ -1,33 +1,124 @@
-import { AntDesign } from "@expo/vector-icons";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View } from "react-native";
+import {
+  Divider,
+  FAB,
+  List,
+  MD3Theme,
+  Modal,
+  Portal,
+  Searchbar,
+  Surface,
+  Text,
+  useTheme,
+} from "react-native-paper";
+import { CodeScanner } from "../../components/home/CodeScanner";
+import { MockPhones } from "../../mock/phones";
 
 const HomeScreen = () => {
-  return (
-    <View style={homeStyles.container}>
-      <Text>home</Text>
+  const [searchQuery, setSearchQuery] = useState("");
+  const [visible, setVisible] = React.useState(false);
+  const theme = useTheme();
+  const styles = homeStyles(theme);
 
-      <TouchableOpacity style={homeStyles.floatingButtonStyle}>
-        <AntDesign name="plus" size={24} color="white" />
-      </TouchableOpacity>
+  const [scannedData, setScannedData] = useState("");
+  const [scanned, setScanned] = useState(false);
+
+  const onChangeSearch = (query: string) => setSearchQuery(query);
+  const showModal = () => setVisible(true);
+  const hideModal = () => setVisible(false);
+  const handleOpenBarCodeScanner = () => {};
+
+  return (
+    <View style={styles.container}>
+      <Searchbar
+        placeholder="Search"
+        value={searchQuery}
+        onChangeText={onChangeSearch}
+      />
+      <View style={styles.listContainer}>
+        {MockPhones.map((phone) => {
+          return (
+            <View key={phone.id}>
+              <List.Item
+                title={`${phone.brand} ${phone.model}`}
+                description={`${phone.color} ${phone.ram} + ${phone.rom} ${phone.imei}`}
+                right={() => {
+                  return (
+                    <Text variant="bodyLarge" style={styles.priceText}>
+                      ¥{phone.outPrice}
+                    </Text>
+                  );
+                }}
+              />
+              <Divider />
+            </View>
+          );
+        })}
+      </View>
+      <Portal>
+        <Modal
+          visible={visible}
+          onDismiss={hideModal}
+          contentContainerStyle={styles.modalContainer}
+        >
+          {!!scanned ? (
+            <Surface elevation={2} style={styles.modalContent}>
+              <Text>Scan Result: {scannedData}</Text>
+            </Surface>
+          ) : (
+            <CodeScanner
+              scanned={scanned}
+              setScanned={setScanned}
+              setScannedData={setScannedData}
+            />
+          )}
+        </Modal>
+      </Portal>
+      <FAB icon="plus" style={styles.addFAB} onPress={showModal} />
     </View>
   );
 };
 
-const homeStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  floatingButtonStyle: {
-    position: "absolute",
-    width: 50,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    right: 30,
-    bottom: 30,
-    borderRadius: 50,
-    backgroundColor: "blue",
-  },
-});
-
+const homeStyles = function (theme: MD3Theme) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      padding: 10,
+      gap: 10,
+    },
+    addFAB: {
+      position: "absolute",
+      margin: 16,
+      right: 0,
+      bottom: 0,
+    },
+    listContainer: {
+      flexGrow: 1,
+      borderRadius: 10,
+    },
+    priceText: {
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      color: theme.colors.error,
+    },
+    modalContainer: {
+      width: "90%",
+      height: "60%",
+      alignSelf: "center",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+    },
+    modalContent: {
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      borderRadius: theme.roundness,
+    },
+  });
+};
 export default HomeScreen;

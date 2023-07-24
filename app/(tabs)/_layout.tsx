@@ -1,8 +1,9 @@
 import { MaterialCommunityIcons as Icon } from "@expo/vector-icons";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import * as NavigationBar from "expo-navigation-bar";
 import { useRouter } from "expo-router";
-import React from "react";
-import { BottomNavigation } from "react-native-paper";
+import React, { useEffect } from "react";
+import { BottomNavigation, useTheme } from "react-native-paper";
 import HomeScreen from "./home";
 import RecordScreen from "./record";
 import SettingScreen from "./setting";
@@ -11,6 +12,15 @@ const Tab = createBottomTabNavigator();
 
 export default function tabs() {
   const router = useRouter();
+  const theme = useTheme();
+
+  useEffect(() => {
+    (async () => {
+      await NavigationBar.setBackgroundColorAsync(
+        theme.colors.elevation.level2 ?? "blue"
+      );
+    })();
+  }, []);
 
   return (
     <Tab.Navigator
@@ -19,7 +29,7 @@ export default function tabs() {
       }}
       tabBar={({ navigation, state, descriptors, insets }) => (
         <BottomNavigation.Bar
-          labeled={false}
+          shifting={true}
           navigationState={state}
           safeAreaInsets={insets}
           onTabPress={({ route, preventDefault }) => {
@@ -40,6 +50,11 @@ export default function tabs() {
               return options.tabBarIcon({ focused, color, size: 24 });
             }
             return null;
+          }}
+          getLabelText={({ route }) => {
+            const { options } = descriptors[route.key];
+            const label = options.title;
+            return label ?? "";
           }}
         />
       )}

@@ -2,16 +2,16 @@ import AntDesign from "@expo/vector-icons/AntDesign";
 import { loadAsync } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { useEffect, useState } from "react";
-import { useColorScheme } from "react-native";
+import { View } from "react-native";
 import { PaperProvider } from "react-native-paper";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function cacheFonts(fonts: string[] | Record<string, string>[]) {
   return fonts.map((font) => loadAsync(font));
 }
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-
+  const insets = useSafeAreaInsets();
   const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
@@ -35,14 +35,24 @@ export default function RootLayout() {
 
   return (
     <PaperProvider>
-      <Stack>
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }}
-        />
-      </Stack>
+      <View
+        style={{
+          flex: 1,
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        }}
+      >
+        <Stack>
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              headerShown: false,
+            }}
+          />
+        </Stack>
+      </View>
     </PaperProvider>
   );
 }

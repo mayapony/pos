@@ -18,3 +18,4 @@ web-build/
 
 yarn.lock
 .vscode
+.expo
