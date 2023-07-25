@@ -2,7 +2,7 @@ import { Autocomplete } from "@telenko/react-native-paper-autocomplete";
 import React, { useMemo } from "react";
 import { StyleSheet, View } from "react-native";
 import { MD3Theme, Text, useTheme } from "react-native-paper";
-import { MaterialSelectDropdown } from "./MaterialSelectDropdown";
+import Selector from "./Selector";
 
 type DataFormProps = {
   scannedData: string;
@@ -52,8 +52,8 @@ export const PhoneSpecForm = ({ scannedData }: DataFormProps) => {
           gap: 10,
         }}
       >
-        <MaterialSelectDropdown values={[6, 8, 12]} setValue={setText} />
-        <MaterialSelectDropdown values={[128, 256, 512]} setValue={setText} />
+        <Selector options={["6G", "8G", "12G"]} placeholder="运行内存" />
+        <Selector options={["128G", "256G", "512G"]} placeholder="存储容量" />
       </View>
     </View>
   );
