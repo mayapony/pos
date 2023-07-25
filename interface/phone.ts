@@ -10,3 +10,5 @@ export interface Phone {
   imei: string;
   source: string;
 }
+
+export type PhoneWithoutID = Omit<Phone, "id">;

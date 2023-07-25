@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
-  Button,
-  Dialog,
   Divider,
   FAB,
   List,
@@ -14,7 +12,7 @@ import {
   useTheme,
 } from "react-native-paper";
 import { CodeScanner } from "../../components/home/CodeScanner";
-import { PhoneSpecForm } from "../../components/home/PhoneSpecForm";
+import { FormDialog } from "../../components/home/FormDialog";
 import { MockPhones } from "../../mock/phones";
 
 const HomeScreen = () => {
@@ -63,14 +61,11 @@ const HomeScreen = () => {
       </View>
       <Portal>
         {!!scanned ? (
-          <Dialog visible={visible} onDismiss={hideModal}>
-            <Dialog.Content>
-              <PhoneSpecForm scannedData={scannedData} />
-            </Dialog.Content>
-            <Dialog.Actions>
-              <Button onPress={hideModal}>确定</Button>
-            </Dialog.Actions>
-          </Dialog>
+          <FormDialog
+            scannedData={scannedData}
+            visible={visible}
+            hideDialog={hideModal}
+          />
         ) : (
           <Modal
             visible={visible}

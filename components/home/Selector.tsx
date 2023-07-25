@@ -3,11 +3,16 @@ import { View } from "react-native";
 import { Button, Divider, Menu, useTheme } from "react-native-paper";
 
 type SelectorProps = {
-  placeholder: string;
-  options: string[];
+  options: number[];
+  checkedOption: number;
+  setCheckedOption: (value: number) => void;
 };
 
-const Selector = ({ placeholder, options }: SelectorProps) => {
+const Selector = ({
+  options,
+  checkedOption,
+  setCheckedOption,
+}: SelectorProps) => {
   const theme = useTheme();
   const [visible, setVisible] = useState(true);
 
@@ -32,15 +37,21 @@ const Selector = ({ placeholder, options }: SelectorProps) => {
             buttonColor={theme.colors.background}
             textColor={theme.colors.onBackground}
           >
-            {placeholder}
+            {checkedOption + "G"}
           </Button>
         }
       >
         {options.map((option) => (
-          <>
-            <Menu.Item onPress={() => {}} title={option} />
+          <View key={option}>
+            <Menu.Item
+              onPress={() => {
+                setCheckedOption(option);
+                closeMenu();
+              }}
+              title={option + "G"}
+            />
             <Divider />
-          </>
+          </View>
         ))}
       </Menu>
     </View>
