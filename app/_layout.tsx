@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { View } from "react-native";
 import { PaperProvider } from "react-native-paper";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { initPhoneTable } from "../api/phone";
 
 function cacheFonts(fonts: string[] | Record<string, string>[]) {
   return fonts.map((font) => loadAsync(font));
@@ -18,6 +19,7 @@ export default function RootLayout() {
     async function loadResourcesAndDataAsync() {
       try {
         SplashScreen.preventAutoHideAsync();
+        initPhoneTable();
 
         const fontAssets = cacheFonts([AntDesign.font]);
 

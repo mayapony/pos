@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import {
   Divider,
@@ -11,26 +11,42 @@ import {
   Text,
   useTheme,
 } from "react-native-paper";
+import { findPhones } from "../../api/phone";
 import { CodeScanner } from "../../components/home/CodeScanner";
 import { FormDialog } from "../../components/home/FormDialog";
-import { MockPhones } from "../../mock/phones";
+import { Phone } from "../../types/phone";
 
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
-  const [visible, setVisible] = React.useState(true);
   const theme = useTheme();
   const styles = homeStyles(theme);
 
   const [scannedData, setScannedData] = useState("");
-  const [scanned, setScanned] = useState(true);
+  const [scanned, setScanned] = useState(false);
 
   const onChangeSearch = (query: string) => setSearchQuery(query);
+
+  const [visible, setVisible] = React.useState(false);
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
-  const handleScan = () => {
+
+  const [phones, setPhones] = useState<Phone[] | []>([]);
+
+  useEffect(() => {
+    fetchPhones();
+  }, []);
+
+  function handleScan() {
     setScanned(false);
     showModal();
-  };
+  }
+
+  function fetchPhones() {
+    findPhones().then((curPhones) => {
+      setPhones(curPhones);
+    });
+    console.log("fetch Data");
+  }
 
   return (
     <View style={styles.container}>
@@ -40,12 +56,12 @@ const HomeScreen = () => {
         onChangeText={onChangeSearch}
       />
       <View style={styles.listContainer}>
-        {MockPhones.map((phone) => {
+        {phones.map((phone) => {
           return (
             <View key={phone.id}>
               <List.Item
                 title={`${phone.brand} ${phone.model}`}
-                description={`${phone.color} ${phone.ram} + ${phone.rom} ${phone.imei}`}
+                description={`${phone.color} ${phone.ram}GB + ${phone.rom}GB ${phone.imei}`}
                 right={() => {
                   return (
                     <Text variant="bodyLarge" style={styles.priceText}>
@@ -65,6 +81,7 @@ const HomeScreen = () => {
             scannedData={scannedData}
             visible={visible}
             hideDialog={hideModal}
+            fetchPhones={fetchPhones}
           />
         ) : (
           <Modal

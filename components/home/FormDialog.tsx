@@ -12,7 +12,8 @@ import {
   TextInput,
   useTheme,
 } from "react-native-paper";
-import { PhoneWithoutID } from "../../interface/phone";
+import { insertPhone } from "../../api/phone";
+import { PhoneWithoutID } from "../../types/phone";
 import { fuzzySearch } from "../../utils";
 import { AUTOCOMPLETE_S, BRANDS, TEXT_INPUT_S } from "../../utils/constants";
 import Selector from "./Selector";
@@ -21,12 +22,14 @@ type DataFormProps = {
   scannedData: string;
   visible: boolean;
   hideDialog: () => void;
+  fetchPhones: () => void;
 };
 
 export const FormDialog = ({
   scannedData,
   visible,
   hideDialog,
+  fetchPhones,
 }: DataFormProps) => {
   const theme = useTheme();
   const styles = dataFormStyles(theme);
@@ -37,7 +40,7 @@ export const FormDialog = ({
     color: "",
     ram: 8,
     rom: 256,
-    imei: "",
+    imei: scannedData,
     inPrice: 0,
     outPrice: 0,
     source: "",
@@ -58,6 +61,8 @@ export const FormDialog = ({
 
   function submitForm() {
     console.log(formState);
+    insertPhone(formState);
+    fetchPhones();
     hideDialog();
   }
 
@@ -108,7 +113,11 @@ export const FormDialog = ({
               <TextInput
                 mode="outlined"
                 label={option.label}
-                value={formState[option.name].toString()}
+                value={
+                  formState[option.name] === 0
+                    ? ""
+                    : formState[option.name].toString()
+                }
                 onChangeText={(value) => handleInputChange(value, option.name)}
                 keyboardType="number-pad"
                 key={option.name}
