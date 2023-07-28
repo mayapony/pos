@@ -1,5 +1,5 @@
 export interface Phone {
-  id: string;
+  id: number;
   brand: string;
   outPrice: number;
   inPrice: number;
@@ -9,6 +9,7 @@ export interface Phone {
   model: string;
   imei: string;
   source: string;
+  sold: number;
 }
 
 export type PhoneWithoutID = Omit<Phone, "id">;

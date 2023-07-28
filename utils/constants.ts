@@ -25,3 +25,14 @@ export const TEXT_INPUT_S = [
     name: "outPrice",
   },
 ] as const;
+
+export const SELL_TEXT_INPUT_S = [
+  {
+    label: "姓名",
+    name: "name",
+  },
+  {
+    label: "手机号",
+    name: "phone",
+  },
+];

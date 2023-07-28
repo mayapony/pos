@@ -13,8 +13,9 @@ import {
 } from "react-native-paper";
 import { findPhones } from "../../api/phone";
 import { CodeScanner } from "../../components/home/CodeScanner";
-import { FormDialog } from "../../components/home/FormDialog";
-import { Phone } from "../../types/phone";
+import { PurchaseDialog } from "../../components/home/PurchaseDialog";
+import SellDialog from "../../components/home/SellDialog";
+import { Phone } from "../../types/phone.type";
 
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -23,6 +24,7 @@ const HomeScreen = () => {
 
   const [scannedData, setScannedData] = useState("");
   const [scanned, setScanned] = useState(false);
+  const [scannedPhone, setScannedPhone] = useState<Phone | null>(null);
 
   const onChangeSearch = (query: string) => setSearchQuery(query);
 
@@ -36,6 +38,14 @@ const HomeScreen = () => {
     fetchPhones();
   }, []);
 
+  useEffect(() => {
+    const result = phones.find((phone) => {
+      return phone.imei === scannedData;
+    });
+    console.log("🚀 ~ file: home.tsx:45 ~ result ~ result:", result);
+    setScannedPhone(result ?? null);
+  });
+
   function handleScan() {
     setScanned(false);
     showModal();
@@ -43,7 +53,7 @@ const HomeScreen = () => {
 
   function fetchPhones() {
     findPhones().then((curPhones) => {
-      setPhones(curPhones);
+      setPhones(curPhones.data ?? []);
     });
     console.log("fetch Data");
   }
@@ -76,14 +86,7 @@ const HomeScreen = () => {
         })}
       </View>
       <Portal>
-        {!!scanned ? (
-          <FormDialog
-            scannedData={scannedData}
-            visible={visible}
-            hideDialog={hideModal}
-            fetchPhones={fetchPhones}
-          />
-        ) : (
+        {!scanned ? (
           <Modal
             visible={visible}
             onDismiss={hideModal}
@@ -95,6 +98,16 @@ const HomeScreen = () => {
               setScannedData={setScannedData}
             />
           </Modal>
+        ) : scannedPhone ? (
+          <SellDialog phone={scannedPhone} fetchPhones={fetchPhones} />
+        ) : (
+          <PurchaseDialog
+            scannedData={scannedData}
+            visible={visible}
+            hideDialog={hideModal}
+            fetchPhones={fetchPhones}
+            setScannedData={setScannedData}
+          />
         )}
       </Portal>
       <FAB icon="plus" style={styles.addFAB} onPress={handleScan} />

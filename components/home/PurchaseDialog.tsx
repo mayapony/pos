@@ -13,24 +13,26 @@ import {
   useTheme,
 } from "react-native-paper";
 import { insertPhone } from "../../api/phone";
-import { PhoneWithoutID } from "../../types/phone";
+import { PhoneWithoutID } from "../../types/phone.type";
 import { fuzzySearch } from "../../utils";
 import { AUTOCOMPLETE_S, BRANDS, TEXT_INPUT_S } from "../../utils/constants";
 import Selector from "./Selector";
 
-type DataFormProps = {
+type PurchaseDialogProps = {
   scannedData: string;
   visible: boolean;
   hideDialog: () => void;
   fetchPhones: () => void;
+  setScannedData: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export const FormDialog = ({
+export const PurchaseDialog = ({
   scannedData,
   visible,
   hideDialog,
   fetchPhones,
-}: DataFormProps) => {
+  setScannedData,
+}: PurchaseDialogProps) => {
   const theme = useTheme();
   const styles = dataFormStyles(theme);
 
@@ -44,6 +46,7 @@ export const FormDialog = ({
     inPrice: 0,
     outPrice: 0,
     source: "",
+    sold: 0,
   });
 
   function handleInputChange(value: number | string, name: string) {
@@ -64,6 +67,7 @@ export const FormDialog = ({
     insertPhone(formState);
     fetchPhones();
     hideDialog();
+    setScannedData("");
   }
 
   function constructOption(name: string) {

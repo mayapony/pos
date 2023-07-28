@@ -1,4 +1,4 @@
-import { Phone } from "../types/phone";
+import { Phone } from "../types/phone.type";
 
 export const MockPhones: Phone[] = [
   // random gen

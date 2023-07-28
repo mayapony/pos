@@ -1,22 +1,6 @@
-import * as SQLite from "expo-sqlite";
-import { Platform } from "react-native";
-import { Phone, PhoneWithoutID } from "../types/phone";
-
-function openDatabase() {
-  if (Platform.OS === "web") {
-    return {
-      transaction: () => {
-        return {
-          executeSql: () => {
-            console.log("this is web, don't support SQLite");
-          },
-        };
-      },
-    };
-  }
-
-  return SQLite.openDatabase("db.db");
-}
+import { openDatabase } from ".";
+import { Phone, PhoneWithoutID } from "../types/phone.type";
+import { IResponse } from "./response";
 
 export function initPhoneTable() {
   console.log("initPhoneTable");
@@ -34,7 +18,8 @@ export function initPhoneTable() {
         rom INTEGER,
         model TEXT,
         imei TEXT,
-        source TEXT
+        source TEXT,
+        sold INTEGER
 			)`);
     },
     (err) => {
@@ -56,25 +41,35 @@ export function insertPhone({
   model,
   imei,
   source,
+  sold,
 }: PhoneWithoutID) {
   const db = openDatabase();
-  db.transaction(
-    (tx) => {
-      tx.executeSql(
-        "INSERT INTO phone (brand, outPrice, inPrice, color, ram, rom, model, imei, source) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [brand, outPrice, inPrice, color, ram, rom, model, imei, source]
-      );
-    },
-    (err) => {
-      console.log(err);
-    },
-    () => {
-      console.log("insert phone success");
-    }
-  );
+
+  return new Promise<IResponse>((resolve, reject) => {
+    db.transaction(
+      (tx) => {
+        tx.executeSql(
+          "INSERT INTO phone (brand, outPrice, inPrice, color, ram, rom, model, imei, source, sold) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+          [brand, outPrice, inPrice, color, ram, rom, model, imei, source, sold]
+        );
+      },
+      (err) => {
+        reject({
+          code: -1,
+          message: err,
+        });
+      },
+      () => {
+        resolve({
+          code: 1,
+          message: "success",
+        });
+      }
+    );
+  });
 }
 
-export function findPhones(): Promise<Phone[]> {
+export function findPhones(): Promise<IResponse<Phone[]>> {
   const db = openDatabase();
   return new Promise((resolve, reject) => {
     db.transaction((tx) => {
@@ -86,7 +81,10 @@ export function findPhones(): Promise<Phone[]> {
           for (let i = 0; i < rows.length; i++) {
             phones.push(rows.item(i));
           }
-          resolve(phones);
+          resolve({
+            data: phones,
+            code: 1,
+          });
         },
         (_, error) => {
           reject(error);
@@ -97,20 +95,28 @@ export function findPhones(): Promise<Phone[]> {
   });
 }
 
-// export function findPhones(callback: (rows) => void) {
-//   const db = openDatabase();
-//   return db.transaction(
-//     (tx) => {
-//       return tx.executeSql("SELECT * FROM phone", [], (_, { rows }) => {
-//         console.log(rows);
-//         callback(rows);
-//       });
-//     },
-//     (err) => {
-//       console.log(err);
-//     },
-//     () => {
-//       console.log("find phones success");
-//     }
-//   );
-// }
+export function sellPhoneByID(id: number): Promise<IResponse> {
+  const db = openDatabase();
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "update phone set sold = 1 where id = ?",
+        [id],
+        () => {
+          console.log(
+            "🚀 ~ file: phone.ts:104 ~ tx.executeSql ~ success:",
+            "success"
+          );
+          resolve({
+            code: 1,
+            message: "success",
+          });
+        },
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    });
+  });
+}
