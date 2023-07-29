@@ -11,8 +11,10 @@ export function openDatabase() {
           },
         };
       },
+      closeAsync: () => {},
     };
   }
 
-  return SQLite.openDatabase("db.db");
+  const db = SQLite.openDatabase("db.db");
+  return db;
 }

@@ -22,14 +22,17 @@ type SellDialogProps = {
 };
 
 const SellDialog = ({ phone, fetchPhones }: SellDialogProps) => {
+  console.log("🚀 ~ file: SellDialog.tsx:25 ~ SellDialog ~ phone:", phone);
   const theme = useTheme();
   const styles = sellDialogStyles(theme);
   const [customerData, setCustomData] = React.useState<CustomerWithoutID>({
     name: "",
     phone: "",
   });
+
   const [recordData, setRecordData] = React.useState<RecordWithoutID>({
     customerId: 0,
+    phoneId: 0,
     time: "",
     money: 0,
     salesclerk: "马",
@@ -50,9 +53,10 @@ const SellDialog = ({ phone, fetchPhones }: SellDialogProps) => {
     const { data } = await insertCustomer(customerData);
 
     if (data?.insertId) {
-      const record = {
+      const record: RecordWithoutID = {
         ...recordData,
         customerId: data.insertId,
+        phoneId: phone.id,
         time: new Date().toString(),
       };
       console.log({ record });

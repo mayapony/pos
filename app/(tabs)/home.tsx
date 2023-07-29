@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet, View } from "react-native";
 import {
   Divider,
   FAB,
@@ -65,26 +65,29 @@ const HomeScreen = () => {
         value={searchQuery}
         onChangeText={onChangeSearch}
       />
-      <View style={styles.listContainer}>
-        {phones.map((phone) => {
-          return (
-            <View key={phone.id}>
-              <List.Item
-                title={`${phone.brand} ${phone.model}`}
-                description={`${phone.color} ${phone.ram}GB + ${phone.rom}GB ${phone.imei}`}
-                right={() => {
-                  return (
-                    <Text variant="bodyLarge" style={styles.priceText}>
-                      ¥{phone.outPrice}
-                    </Text>
-                  );
-                }}
-              />
-              <Divider />
-            </View>
-          );
-        })}
-      </View>
+      <List.Section>
+        <List.Subheader>库存</List.Subheader>
+        <ScrollView style={styles.listContainer}>
+          {phones.map((phone) => {
+            return (
+              <View key={phone.id}>
+                <List.Item
+                  title={`${phone.brand} ${phone.model}`}
+                  description={`${phone.color} ${phone.ram}GB + ${phone.rom}GB ${phone.imei}`}
+                  right={() => {
+                    return (
+                      <Text variant="bodyLarge" style={styles.priceText}>
+                        ¥{phone.outPrice}
+                      </Text>
+                    );
+                  }}
+                />
+                <Divider />
+              </View>
+            );
+          })}
+        </ScrollView>
+      </List.Section>
       <Portal>
         {!scanned ? (
           <Modal
