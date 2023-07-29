@@ -36,6 +36,9 @@ const Selector = ({
             mode="outlined"
             buttonColor={theme.colors.background}
             textColor={theme.colors.onBackground}
+            style={{
+              borderRadius: theme.roundness,
+            }}
           >
             {checkedOption + "G"}
           </Button>

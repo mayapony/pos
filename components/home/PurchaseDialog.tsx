@@ -7,6 +7,7 @@ import { StyleSheet, View } from "react-native";
 import {
   Button,
   Dialog,
+  HelperText,
   MD3Theme,
   Text,
   TextInput,
@@ -14,7 +15,7 @@ import {
 } from "react-native-paper";
 import { insertPhone } from "../../api/phone";
 import { PhoneWithoutID } from "../../types/phone.type";
-import { fuzzySearch } from "../../utils";
+import { fuzzySearch, isValidate } from "../../utils";
 import { AUTOCOMPLETE_S, BRANDS, TEXT_INPUT_S } from "../../utils/constants";
 import Selector from "./Selector";
 
@@ -45,7 +46,7 @@ export const PurchaseDialog = ({
     imei: scannedData,
     inPrice: 0,
     outPrice: 0,
-    source: "",
+    source: "*",
     sold: 0,
   });
 
@@ -63,9 +64,20 @@ export const PurchaseDialog = ({
   }
 
   function submitForm() {
-    console.log(formState);
-    insertPhone(formState);
-    fetchPhones();
+    console.log("🚀 ~ file: PurchaseDialog.tsx:67 ~ submitForm ~ formState:", {
+      formState,
+    });
+    if (isValidate(formState)) {
+      insertPhone(formState);
+      fetchPhones();
+      hideDialog();
+      setScannedData("");
+    } else {
+      console.log("data is not valid");
+    }
+  }
+
+  function cancelForm() {
     hideDialog();
     setScannedData("");
   }
@@ -78,6 +90,11 @@ export const PurchaseDialog = ({
     }
     return [];
   }
+
+  const hasErrors = () => {
+    console.log(!isValidate(formState));
+    return !isValidate(formState);
+  };
 
   return (
     <Dialog visible={visible} onDismiss={hideDialog}>
@@ -128,11 +145,11 @@ export const PurchaseDialog = ({
               />
             );
           })}
-
           <View
             style={{
               display: "flex",
               flexDirection: "row",
+              marginTop: 5,
               gap: 10,
             }}
           >
@@ -151,9 +168,13 @@ export const PurchaseDialog = ({
               }}
             />
           </View>
+          <HelperText type="error" visible={hasErrors()}>
+            输入框不能为空*
+          </HelperText>
         </View>
       </Dialog.Content>
       <Dialog.Actions>
+        <Button onPress={cancelForm}>取消</Button>
         <Button onPress={submitForm}>确定</Button>
       </Dialog.Actions>
     </Dialog>
@@ -168,7 +189,8 @@ const dataFormStyles = (theme: MD3Theme) => {
       flexDirection: "column",
       borderRadius: theme.roundness,
       padding: 16,
-      gap: 10,
+      gap: 5,
+      paddingBottom: 0,
     },
   });
 };
