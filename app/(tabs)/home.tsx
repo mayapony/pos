@@ -1,6 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { ScrollView, StyleSheet, View } from "react-native";
+import BottomSheet from "@gorhom/bottom-sheet";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { ScrollView, StyleSheet, TouchableOpacity, View } from "react-native";
 import {
+  Button,
   Divider,
   FAB,
   List,
@@ -34,13 +36,22 @@ const HomeScreen = () => {
 
   const [phones, setPhones] = useState<Phone[] | []>([]);
 
+  // variables
+  const snapPoints = useMemo(() => ["25%"], []);
+  const [bottomSheetIndex, setBottomSheetIndex] = useState(-1);
+  // callbacks
+  const handleSheetChanges = useCallback((index: number) => {
+    console.log("handleSheetChanges", index);
+    setBottomSheetIndex(index);
+  }, []);
+
   useEffect(() => {
     fetchPhones();
   }, []);
 
   useEffect(() => {
     const result = phones.find((phone) => {
-      return phone.imei === scannedData;
+      return phone.imei === scannedData && phone.sold === 0;
     });
     console.log("🚀 ~ file: home.tsx:45 ~ result ~ result:", result);
     setScannedPhone(result ?? null);
@@ -53,7 +64,8 @@ const HomeScreen = () => {
 
   function fetchPhones() {
     findPhones().then((curPhones) => {
-      setPhones(curPhones.data ?? []);
+      const phones = curPhones.data?.filter((phone) => phone.sold === 0);
+      setPhones(phones ?? []);
     });
     console.log("fetch Data");
   }
@@ -70,7 +82,12 @@ const HomeScreen = () => {
         <ScrollView style={styles.listContainer}>
           {phones.map((phone) => {
             return (
-              <View key={phone.id}>
+              <TouchableOpacity
+                key={phone.id}
+                onPress={() => {
+                  setBottomSheetIndex(0);
+                }}
+              >
                 <List.Item
                   title={`${phone.brand} ${phone.model}`}
                   description={`${phone.color} ${phone.ram}GB + ${phone.rom}GB ${phone.imei}`}
@@ -83,7 +100,7 @@ const HomeScreen = () => {
                   }}
                 />
                 <Divider />
-              </View>
+              </TouchableOpacity>
             );
           })}
         </ScrollView>
@@ -114,6 +131,21 @@ const HomeScreen = () => {
         )}
       </Portal>
       <FAB icon="plus" style={styles.addFAB} onPress={handleScan} />
+
+      <BottomSheet
+        index={bottomSheetIndex}
+        snapPoints={snapPoints}
+        enablePanDownToClose={true}
+        onChange={handleSheetChanges}
+        backgroundStyle={{
+          backgroundColor: theme.colors.elevation.level2,
+        }}
+      >
+        <View style={styles.contentContainer}>
+          <Button>修改</Button>
+          <Button>删除</Button>
+        </View>
+      </BottomSheet>
     </View>
   );
 };
@@ -148,6 +180,11 @@ const homeStyles = function (theme: MD3Theme) {
       display: "flex",
       justifyContent: "center",
       alignItems: "center",
+    },
+    contentContainer: {
+      flex: 1,
+      alignItems: "center",
+      backgroundColor: theme.colors.elevation.level2,
     },
   });
 };
