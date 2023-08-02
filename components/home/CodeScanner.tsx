@@ -5,16 +5,10 @@ import React, { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, Text, View } from "react-native";
 
 type CodeScannerProps = {
-  setScannedData: React.Dispatch<React.SetStateAction<string>>;
-  scanned: boolean;
-  setScanned: React.Dispatch<React.SetStateAction<boolean>>;
+  setScannedIMEI: React.Dispatch<React.SetStateAction<string>>;
 };
 
-export function CodeScanner({
-  setScannedData,
-  scanned,
-  setScanned,
-}: CodeScannerProps) {
+export function CodeScanner({ setScannedIMEI }: CodeScannerProps) {
   const [hasPermission, setHasPermission] = useState(false);
 
   useEffect(() => {
@@ -26,15 +20,8 @@ export function CodeScanner({
     getBarCodeScannerPermissions();
   }, []);
 
-  const handleBarCodeScanned = ({
-    type,
-    data,
-  }: {
-    type: string;
-    data: string;
-  }) => {
-    setScanned(true);
-    setScannedData(data);
+  const handleBarCodeScanned = ({ data }: { data: string }) => {
+    setScannedIMEI(data);
   };
 
   if (hasPermission === null) {
@@ -52,7 +39,7 @@ export function CodeScanner({
         barCodeScannerSettings={{
           barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
         }}
-        onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
+        onBarCodeScanned={handleBarCodeScanned}
       />
     </View>
   );

@@ -4,15 +4,7 @@ import {
 } from "@telenko/react-native-paper-autocomplete";
 import React from "react";
 import { StyleSheet, View } from "react-native";
-import {
-  Button,
-  Dialog,
-  HelperText,
-  MD3Theme,
-  Text,
-  TextInput,
-  useTheme,
-} from "react-native-paper";
+import { Button, Dialog, MD3DarkTheme, TextInput } from "react-native-paper";
 import { insertPhone } from "../../api/phone";
 import { PhoneWithoutID } from "../../types/phone.type";
 import { fuzzySearch, isValidate } from "../../utils";
@@ -25,6 +17,7 @@ type PurchaseDialogProps = {
   hideDialog: () => void;
   fetchPhones: () => void;
   setScannedData: React.Dispatch<React.SetStateAction<string>>;
+  initFormData?: PhoneWithoutID;
 };
 
 export const PurchaseDialog = ({
@@ -33,11 +26,7 @@ export const PurchaseDialog = ({
   hideDialog,
   fetchPhones,
   setScannedData,
-}: PurchaseDialogProps) => {
-  const theme = useTheme();
-  const styles = dataFormStyles(theme);
-
-  const [formState, setFormState] = React.useState<PhoneWithoutID>({
+  initFormData = {
     brand: "",
     model: "",
     color: "",
@@ -48,7 +37,9 @@ export const PurchaseDialog = ({
     outPrice: 0,
     source: "*",
     sold: 0,
-  });
+  },
+}: PurchaseDialogProps) => {
+  const [formState, setFormState] = React.useState(initFormData);
 
   function handleInputChange(value: number | string, name: string) {
     console.log({
@@ -91,16 +82,17 @@ export const PurchaseDialog = ({
     return [];
   }
 
-  const hasErrors = () => {
-    console.log(!isValidate(formState));
-    return !isValidate(formState);
-  };
-
   return (
     <Dialog visible={visible} onDismiss={hideDialog}>
       <Dialog.Content>
         <View style={styles.container}>
-          <Text variant="labelSmall">串码： {scannedData}</Text>
+          <TextInput
+            mode="outlined"
+            label="串码"
+            value={formState.imei}
+            onChangeText={(value) => handleInputChange(value, "imei")}
+            keyboardType="number-pad"
+          />
 
           {AUTOCOMPLETE_S.map((element) => {
             return (
@@ -129,30 +121,29 @@ export const PurchaseDialog = ({
             );
           })}
 
-          {TEXT_INPUT_S.map((option) => {
-            return (
-              <TextInput
-                mode="outlined"
-                label={option.label}
-                value={
-                  formState[option.name] === 0
-                    ? ""
-                    : formState[option.name].toString()
-                }
-                onChangeText={(value) => handleInputChange(value, option.name)}
-                keyboardType="number-pad"
-                key={option.name}
-              />
-            );
-          })}
-          <View
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              marginTop: 5,
-              gap: 10,
-            }}
-          >
+          <View style={styles.rowInputContainer}>
+            {TEXT_INPUT_S.map((option) => {
+              return (
+                <TextInput
+                  mode="outlined"
+                  label={option.label}
+                  value={
+                    formState[option.name] === 0
+                      ? ""
+                      : formState[option.name].toString()
+                  }
+                  onChangeText={(value) =>
+                    handleInputChange(value, option.name)
+                  }
+                  keyboardType="number-pad"
+                  key={option.name}
+                  style={{ flex: 1 }}
+                />
+              );
+            })}
+          </View>
+
+          <View style={styles.rowInputContainer}>
             <Selector
               options={[6, 8, 12]}
               checkedOption={formState.ram}
@@ -168,9 +159,6 @@ export const PurchaseDialog = ({
               }}
             />
           </View>
-          <HelperText type="error" visible={hasErrors()}>
-            输入框不能为空*
-          </HelperText>
         </View>
       </Dialog.Content>
       <Dialog.Actions>
@@ -181,16 +169,20 @@ export const PurchaseDialog = ({
   );
 };
 
-const dataFormStyles = (theme: MD3Theme) => {
-  return StyleSheet.create({
-    container: {
-      width: "100%",
-      display: "flex",
-      flexDirection: "column",
-      borderRadius: theme.roundness,
-      padding: 16,
-      gap: 5,
-      paddingBottom: 0,
-    },
-  });
-};
+const styles = StyleSheet.create({
+  container: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    borderRadius: MD3DarkTheme.roundness,
+    padding: 16,
+    gap: 5,
+    paddingBottom: 0,
+  },
+  rowInputContainer: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 5,
+    gap: 10,
+  },
+});

@@ -19,9 +19,16 @@ import { SELL_TEXT_INPUT_S } from "../../utils/constants";
 type SellDialogProps = {
   phone: Phone;
   fetchPhones: () => void;
+  visible: boolean;
+  hideDialog: () => void;
 };
 
-const SellDialog = ({ phone, fetchPhones }: SellDialogProps) => {
+const SellDialog = ({
+  phone,
+  fetchPhones,
+  visible,
+  hideDialog,
+}: SellDialogProps) => {
   console.log("🚀 ~ file: SellDialog.tsx:25 ~ SellDialog ~ phone:", phone);
   const theme = useTheme();
   const styles = sellDialogStyles(theme);
@@ -38,14 +45,8 @@ const SellDialog = ({ phone, fetchPhones }: SellDialogProps) => {
     salesclerk: "马",
   });
 
-  const [sellDialogVisible, setSellDialogVisible] = React.useState(true);
-
-  function hideSellDialog() {
-    setSellDialogVisible(false);
-  }
-
   async function handleSellPhone() {
-    hideSellDialog();
+    hideDialog();
     console.log({
       ...customerData,
       ...recordData,
@@ -76,7 +77,7 @@ const SellDialog = ({ phone, fetchPhones }: SellDialogProps) => {
   }
 
   return (
-    <Dialog visible={sellDialogVisible} onDismiss={hideSellDialog}>
+    <Dialog visible={visible} onDismiss={hideDialog}>
       <Dialog.Content>
         <View style={styles.container}>
           <Text variant="labelSmall">串码： {phone.imei}</Text>
