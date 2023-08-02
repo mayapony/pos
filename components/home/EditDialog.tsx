@@ -5,36 +5,24 @@ import {
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, Dialog, MD3DarkTheme, TextInput } from "react-native-paper";
-import { insertPhone } from "../../api/phone";
+import { editPhoneByID } from "../../api/phone";
+import { Phone } from "../../types/phone.type";
 import { fuzzySearch, isValidate } from "../../utils";
 import { AUTOCOMPLETE_S, BRANDS, TEXT_INPUT_S } from "../../utils/constants";
 import Selector from "./Selector";
 
-type PurchaseDialogProps = {
-  scannedData: string;
-  visible: boolean;
+type EditDialogProps = {
+  selectedPhone: Phone;
   hideDialog: () => void;
   fetchPhones: () => void;
 };
 
-export const PurchaseDialog = ({
-  scannedData,
-  visible,
+export const EditDialog = ({
+  selectedPhone,
   hideDialog,
   fetchPhones,
-}: PurchaseDialogProps) => {
-  const [formState, setFormState] = React.useState({
-    brand: "",
-    model: "",
-    color: "",
-    ram: 8,
-    rom: 256,
-    imei: scannedData,
-    inPrice: 0,
-    outPrice: 0,
-    source: "*",
-    sold: 0,
-  });
+}: EditDialogProps) => {
+  const [formState, setFormState] = React.useState(selectedPhone);
 
   function handleInputChange(value: number | string, name: string) {
     console.log({
@@ -49,21 +37,18 @@ export const PurchaseDialog = ({
     });
   }
 
-  function submitForm() {
-    console.log("🚀 ~ file: PurchaseDialog.tsx:67 ~ submitForm ~ formState:", {
-      formState,
-    });
+  function handleEdit() {
     if (isValidate(formState)) {
-      insertPhone(formState);
+      editPhoneByID(selectedPhone.id, formState).then((res) => {
+        if (res.code === 1) {
+          console.log("🚀 ~ file: PurchaseDialog.tsx:44 ~ res:", "success");
+        }
+      });
       fetchPhones();
       hideDialog();
     } else {
       console.log("data is not valid");
     }
-  }
-
-  function cancelForm() {
-    hideDialog();
   }
 
   function constructOption(name: string) {
@@ -76,7 +61,7 @@ export const PurchaseDialog = ({
   }
 
   return (
-    <Dialog visible={visible} onDismiss={hideDialog}>
+    <Dialog visible={true} onDismiss={hideDialog}>
       <Dialog.Content>
         <View style={styles.container}>
           <TextInput
@@ -155,8 +140,9 @@ export const PurchaseDialog = ({
         </View>
       </Dialog.Content>
       <Dialog.Actions>
-        <Button onPress={cancelForm}>取消</Button>
-        <Button onPress={submitForm}>确定</Button>
+        <Button onPress={hideDialog}>取消</Button>
+        <Button onPress={hideDialog}>删除</Button>
+        <Button onPress={handleEdit}>修改</Button>
       </Dialog.Actions>
     </Dialog>
   );

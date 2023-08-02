@@ -1,10 +1,11 @@
+import { findPhones } from "api/phone";
+import Dialog from "components/home/Dialog";
+import { EditDialog } from "components/home/EditDialog";
+import StockList from "components/home/StockList";
 import React, { useEffect, useState } from "react";
 import { StyleSheet, View } from "react-native";
 import { Searchbar } from "react-native-paper";
-import { findPhones } from "../../api/phone";
-import Dialog from "../../components/home/Dialog";
-import StockList from "../../components/home/StockList";
-import { Phone } from "../../types/phone.type";
+import { Phone } from "types/phone.type";
 
 export enum DialogType {
   PURCHASE,
@@ -17,7 +18,7 @@ const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const onChangeSearch = (query: string) => setSearchQuery(query);
   const [phones, setPhones] = useState<Phone[] | []>([]);
-  const [selectedPhone, setSelectedPhone] = useState<Phone | null>(null);
+  const [selectedPhone, setSelectedPhone] = React.useState<Phone | null>(null);
 
   const [scannedIMEI, setScannedIMEI] = useState("");
 
@@ -40,12 +41,20 @@ const HomeScreen = () => {
         onChangeText={onChangeSearch}
       />
       <StockList phones={phones} setSelectedPhone={setSelectedPhone} />
-      <Dialog
-        scannedIMEI={scannedIMEI}
-        setScannedIMEI={setScannedIMEI}
-        phones={phones}
-        fetchPhones={fetchPhones}
-      />
+      {!!selectedPhone ? (
+        <EditDialog
+          selectedPhone={selectedPhone}
+          hideDialog={() => setSelectedPhone(null)}
+          fetchPhones={fetchPhones}
+        />
+      ) : (
+        <Dialog
+          scannedIMEI={scannedIMEI}
+          setScannedIMEI={setScannedIMEI}
+          phones={phones}
+          fetchPhones={fetchPhones}
+        />
+      )}
     </View>
   );
 };

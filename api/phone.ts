@@ -120,3 +120,43 @@ export function sellPhoneByID(id: number): Promise<IResponse> {
     });
   });
 }
+
+export function editPhoneByID(
+  id: number,
+  data: PhoneWithoutID
+): Promise<IResponse> {
+  const db = openDatabase();
+  return new Promise((resolve, reject) => {
+    db.transaction((tx) => {
+      tx.executeSql(
+        "update phone set brand = ?, outPrice = ?, inPrice = ?, color = ?, ram = ?, rom = ?, model = ?, imei = ?, source = ? where id = ?",
+        [
+          data.brand,
+          data.outPrice,
+          data.inPrice,
+          data.color,
+          data.ram,
+          data.rom,
+          data.model,
+          data.imei,
+          data.source,
+          id,
+        ],
+        () => {
+          console.log(
+            "🚀 ~ file: phone.ts:104 ~ tx.executeSql ~ success:",
+            "success"
+          );
+          resolve({
+            code: 1,
+            message: "success",
+          });
+        },
+        (_, error) => {
+          reject(error);
+          return false;
+        }
+      );
+    });
+  });
+}

@@ -10,7 +10,7 @@ type StockListProps = {
 
 const StockList = ({ phones, setSelectedPhone }: StockListProps) => {
   return (
-    <View>
+    <View style={{ flex: 1 }}>
       <List.Section>
         <List.Subheader>库存</List.Subheader>
         <ScrollView style={styles.listContainer}>

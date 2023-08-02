@@ -53,7 +53,6 @@ const Dialog = ({
           visible={dialogVisible}
           hideDialog={hideDialog}
           fetchPhones={fetchPhones}
-          setScannedData={setScannedIMEI}
         />
       );
     }
