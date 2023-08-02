@@ -21,6 +21,7 @@
     "@tamagui/theme-base": "^1.43.15",
     "@tamagui/themes": "^1.43.16",
     "@telenko/react-native-paper-autocomplete": "^1.0.3",
+    "babel-plugin-module-resolver": "^5.0.0",
     "babel-plugin-transform-inline-environment-variables": "^0.4.4",
     "expo": "~48.0.18",
     "expo-barcode-scanner": "~12.3.2",
